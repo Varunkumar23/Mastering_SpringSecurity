@@ -2,6 +2,7 @@ package com.lpu.SpringSecurityDbAuthentication.controller;
 
 import com.lpu.SpringSecurityDbAuthentication.entity.Employee;
 import com.lpu.SpringSecurityDbAuthentication.service.EmployeeService;
+import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +15,20 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/register")
-    public String hello(){
-        return "Working!";
-    }
+//    @GetMapping("/register")
+//    public String hello(){
+//        return "Working!";
+//    }
 
     @PostMapping("/register")
     public Employee createEmployee(@RequestBody Employee employee) {
         return employeeService.createEmployee(employee);
 
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody Employee employee, ServletRequest servletRequest) {
+        return employeeService.verifyLogInUser(employee);
     }
 
 

@@ -14,5 +14,5 @@ public interface EmployeeService {
 
     String deleteEmployee(int id);
 
-
+    String verifyLogInUser(Employee employee);
 }
