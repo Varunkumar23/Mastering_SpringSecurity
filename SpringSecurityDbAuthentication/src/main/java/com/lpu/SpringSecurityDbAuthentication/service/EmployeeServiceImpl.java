@@ -3,9 +3,13 @@ package com.lpu.SpringSecurityDbAuthentication.service;
 import com.lpu.SpringSecurityDbAuthentication.entity.Employee;
 import com.lpu.SpringSecurityDbAuthentication.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +21,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
     private final EmployeeRepository repo;
+    private final EmployeeUserDetailService employeeUserDetailService;
 
+    @Autowired
     private final AuthenticationManager authenticationManager;
 
     private final JWTService jwtService;
@@ -47,12 +53,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public String verifyLogInUser(Employee employee) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(employee.getName(), employee.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateJwtToken(employee);
-        } else {
-            return "Login Failed";
+    public ResponseEntity<String> verifyLogInUser(Employee employee) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(employee.getName(), employee.getPassword()));
+            UserDetails userDetails = employeeUserDetailService.loadUserByUsername(employee.getName());
+            String jwt = jwtService.generateJwtToken(userDetails);
+            return new ResponseEntity<>(jwt, HttpStatus.OK);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return new ResponseEntity<>("Error occurred while creating the token \nIncorrect Username Or Password", HttpStatus.BAD_REQUEST);
         }
     }
 

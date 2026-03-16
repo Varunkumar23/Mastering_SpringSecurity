@@ -1,6 +1,7 @@
 package com.lpu.SpringSecurityDbAuthentication.service;
 
 import com.lpu.SpringSecurityDbAuthentication.entity.Employee;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface EmployeeService {
 
     String deleteEmployee(int id);
 
-    String verifyLogInUser(Employee employee);
+    ResponseEntity<String> verifyLogInUser(Employee employee);
 }
